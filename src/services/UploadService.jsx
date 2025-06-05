@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE = process.env.FASTAPI_APP_HOST || 'http://localhost:8000';
+const API_BASE = process.env.REACT_APP_API_HOST;
 
 export const uploadFileToQdrant = async (file) => {
     const formData = new FormData();

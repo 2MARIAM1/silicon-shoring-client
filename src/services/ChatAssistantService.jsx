@@ -1,13 +1,7 @@
 import axios from 'axios';
 
-const API_BASE = process.env.FASTAPI_APP_HOST || 'http://localhost:8000';
+const API_BASE = process.env.REACT_APP_API_HOST;
 
-/**
- * Queries documents using a question and top-k parameter
- * @param {string} question - User's query
- * @param {number} k - Number of top results to retrieve
- * @returns {Promise<{question: string, answer: string, raw_results: string[]}>}
- */
 export const queryDocuments = async (question) => {
   try {
     const response = await axios.post(`${API_BASE}/query`, {
