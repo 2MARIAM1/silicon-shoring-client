@@ -35,9 +35,10 @@ const ChatAssistant = () => {
     return (
         <div id="wrapper">
             <Sidebar />
-            <div id="content-wrapper" className="d-flex flex-column">
-                <div id="content">
-                    <div className="container-fluid py-4" style={{ height: 'calc(100vh - 150px)', overflowY: 'auto' }}>
+            <div id="content-wrapper" className="d-flex flex-column"  style={{ height: '100vh' }}>
+                <div id="content" className="d-flex flex-column" style={{ flex: 1 }}>
+                    {/* Scrollable chat messages */}
+                    <div className="container-fluid py-4" style={{ flexGrow: 1, overflowY: 'auto' }}>
                         {messages.length === 0 && (
                             <div className="alert alert-primary text-center">
                                 👋 Hello! Ask me any question.
@@ -63,6 +64,7 @@ const ChatAssistant = () => {
 
                         <div ref={messagesEndRef} />
                     </div>
+                    {/* Chat input at bottom */}
 
                     <div className="container-fluid bg-white border-top py-3" style={{ position: 'sticky', bottom: 0 }}>
                         <div className="input-group">
@@ -82,7 +84,7 @@ const ChatAssistant = () => {
                         </div>
                     </div>
 
-                    {/*<Footer />*/}
+
                 </div>
             </div>
         </div>
