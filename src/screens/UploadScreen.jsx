@@ -3,12 +3,13 @@ import Swal from 'sweetalert2';
 import { ToastContainer } from 'react-toastify';
 import { uploadFileToQdrant } from "../services/UploadService";
 import Sidebar from "../components/Sidebar/Sidebar";
+import Header from "../components/Header/Header";
 
 const ACCEPTED_TYPES = [
     'application/pdf',
-    'application/msword',                 // .doc
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
-    'text/plain'                          // .txt
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'text/plain'
 ];
 
 const MAX_FILES = 5;
@@ -111,105 +112,112 @@ const UploadScreen = () => {
     return (
         <div id="wrapper">
             <Sidebar />
-            <div className="container-fluid py-4">
-                <h2 className="mb-4">Upload Files (PDF, DOC, DOCX, TXT)</h2>
-                <p className="text-muted">Maximum of 5 files allowed per upload.</p>
 
-                <div className="form-group">
-                    <label>Select files:</label>
-                    <input
-                        type="file"
-                        accept=".pdf,.doc,.docx,.txt"
-                        multiple
-                        className="form-control"
-                        onChange={handleFileChange}
-                    />
-                </div>
+            <div id="content-wrapper" className="d-flex flex-column" style={{ width: '100%' }}>
+                <div id="content">
+                    <Header /> {/* ✅ SB Admin 2 Topbar Header */}
 
-                <div
-                    onDrop={handleDrop}
-                    onDragOver={(e) => e.preventDefault()}
-                    className="border rounded p-4 text-center mt-3 bg-white"
-                    style={{ borderStyle: 'dashed', cursor: 'pointer' }}
-                >
-                    <p className="text-muted m-0">Or drag and drop files here</p>
-                </div>
+                    <div className="container-fluid py-4">
+                        <h2 className="mb-4">Upload Files (PDF, DOC, DOCX, TXT)</h2>
+                        <p className="text-muted">Maximum of 5 files allowed per upload.</p>
 
-                <button
-                    className="btn btn-primary mt-3"
-                    onClick={handleUpload}
-                    disabled={loading || files.length === 0}
-                >
-                    {loading ? 'Uploading...' : 'Upload'}
-                </button>
+                        <div className="form-group">
+                            <label>Select files:</label>
+                            <input
+                                type="file"
+                                accept=".pdf,.doc,.docx,.txt"
+                                multiple
+                                className="form-control"
+                                onChange={handleFileChange}
+                            />
+                        </div>
 
-                {files.length > 0 && (
-                    <div className="mt-4">
-                        <h6>📄 Selected Files</h6>
-                        <ul className="list-group">
-                            {files.map((file, index) => (
-                                <li key={index} className="list-group-item d-flex flex-column">
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <span>{file.name}</span>
-                                        {uploadProgress[file.name] !== undefined && (
-                                            <div className="progress w-50">
-                                                <div
-                                                    className="progress-bar"
-                                                    role="progressbar"
-                                                    style={{ width: `${uploadProgress[file.name]}%` }}
-                                                >
-                                                    {uploadProgress[file.name]}%
-                                                </div>
+                        <div
+                            onDrop={handleDrop}
+                            onDragOver={(e) => e.preventDefault()}
+                            className="border rounded p-4 text-center mt-3 bg-white"
+                            style={{ borderStyle: 'dashed', cursor: 'pointer' }}
+                        >
+                            <p className="text-muted m-0">Or drag and drop files here</p>
+                        </div>
+
+                        <button
+                            className="btn btn-primary mt-3"
+                            onClick={handleUpload}
+                            disabled={loading || files.length === 0}
+                        >
+                            {loading ? 'Uploading...' : 'Upload'}
+                        </button>
+
+                        {files.length > 0 && (
+                            <div className="mt-4">
+                                <h6>📄 Selected Files</h6>
+                                <ul className="list-group">
+                                    {files.map((file, index) => (
+                                        <li key={index} className="list-group-item d-flex flex-column">
+                                            <div className="d-flex justify-content-between align-items-center">
+                                                <span>{file.name}</span>
+                                                {uploadProgress[file.name] !== undefined && (
+                                                    <div className="progress w-50">
+                                                        <div
+                                                            className="progress-bar"
+                                                            role="progressbar"
+                                                            style={{ width: `${uploadProgress[file.name]}%` }}
+                                                        >
+                                                            {uploadProgress[file.name]}%
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
 
-                {uploadResults.length > 0 && (
-                    <div className="mt-5">
-                        <h6>📤 Upload Results</h6>
-                        <ul className="list-group">
-                            {uploadResults.map((file, index) => (
-                                <li key={index} className="list-group-item d-flex flex-column">
-                                    <div className="d-flex justify-content-between">
-                                        <strong>{file.name}</strong>
-                                        <span className={`badge badge-pill ${file.status === 'success' ? 'badge-success' : 'badge-danger'}`}>
-                      {file.status === 'success' ? '✅ Uploaded' : '❌ Failed'}
-                    </span>
-                                    </div>
-                                    {file.status === 'success' && (
-                                        <small className="text-muted mt-1">Chunks: {file.chunks}, Validation: {file.validation}</small>
-                                    )}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
+                        {uploadResults.length > 0 && (
+                            <div className="mt-5">
+                                <h6>📤 Upload Results</h6>
+                                <ul className="list-group">
+                                    {uploadResults.map((file, index) => (
+                                        <li key={index} className="list-group-item d-flex flex-column">
+                                            <div className="d-flex justify-content-between">
+                                                <strong>{file.name}</strong>
+                                                <span className={`badge badge-pill ${file.status === 'success' ? 'badge-success' : 'badge-danger'}`}>
+                          {file.status === 'success' ? '✅ Uploaded' : '❌ Failed'}
+                        </span>
+                                            </div>
+                                            {file.status === 'success' && (
+                                                <small className="text-muted mt-1">Chunks: {file.chunks}, Validation: {file.validation}</small>
+                                            )}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
 
-                {uploadHistory.length > 0 && (
-                    <div className="mt-5">
-                        <h6>🕘 Upload History</h6>
-                        <ul className="list-group">
-                            {uploadHistory.map((entry, index) => (
-                                <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong>{entry.name}</strong>
-                                        <br />
-                                        <small className="text-muted">{entry.time}</small>
-                                    </div>
-                                    <span className={`badge badge-pill ${entry.status === 'success' ? 'badge-success' : 'badge-danger'}`}>
-                    {entry.status === 'success' ? '✅ Success' : '❌ Failed'}
-                  </span>
-                                </li>
-                            ))}
-                        </ul>
+                        {uploadHistory.length > 0 && (
+                            <div className="mt-5">
+                                <h6>🕘 Upload History</h6>
+                                <ul className="list-group">
+                                    {uploadHistory.map((entry, index) => (
+                                        <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <strong>{entry.name}</strong><br />
+                                                <small className="text-muted">{entry.time}</small>
+                                            </div>
+                                            <span className={`badge badge-pill ${entry.status === 'success' ? 'badge-success' : 'badge-danger'}`}>
+                        {entry.status === 'success' ? '✅ Success' : '❌ Failed'}
+                      </span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
                     </div>
-                )}
+                </div>
             </div>
+
             <ToastContainer position="top-right" autoClose={4000} />
         </div>
     );

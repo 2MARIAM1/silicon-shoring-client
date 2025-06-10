@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {queryDocuments} from "../services/ChatAssistantService";
 import Sidebar from "../components/Sidebar/Sidebar";
+import Header from "../components/Header/Header";
 
 const ChatAssistant = () => {
     const [inputValue, setInputValue] = useState('');
@@ -37,6 +38,7 @@ const ChatAssistant = () => {
             <Sidebar />
             <div id="content-wrapper" className="d-flex flex-column"  style={{ height: '100vh' }}>
                 <div id="content" className="d-flex flex-column" style={{ flex: 1 }}>
+                    <Header />
                     {/* Scrollable chat messages */}
                     <div className="container-fluid py-4" style={{ flexGrow: 1, overflowY: 'auto' }}>
                         {messages.length === 0 && (
