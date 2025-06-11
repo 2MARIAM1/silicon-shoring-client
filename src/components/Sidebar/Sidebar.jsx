@@ -20,8 +20,12 @@ const Sidebar = () => {
     const [uploadProgress, setUploadProgress] = useState({});
     const [uploadHistory, setUploadHistory] = useState([]);
     const [lastIngestedRepo, setLastIngestedRepo] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const openRepoModal = () => setIsModalOpen(true);
+    const closeRepoModal = () => setIsModalOpen(false);
 
     useEffect(() => {
+        localStorage.clear();
         const saved = localStorage.getItem('uploadHistory');
         if (saved) setUploadHistory(JSON.parse(saved));
     }, []);
@@ -34,26 +38,20 @@ const Sidebar = () => {
         }
 
         setLoadingRepo(true);
-        toast.info("📚 Ingesting repository... This may take a while.");
-
-        // ⏱️ Set reminders
-        let reminderInterval = null;
-        const reminderTimeout = setTimeout(() => {
-            reminderInterval = setInterval(() => {
-                toast.info("⏳ Still ingesting... this operation can take a while.", { autoClose: 5000 });
-            }, 15000);
-        }, 30000);
-
         try {
-            const data = await ingestRepository(repoUrl);
-            toast.success(`Repository "${data.repo_name}" ingested successfully!`);
-            setLastIngestedRepo(data);  // ✅ save result for UI
+            const data = await toast.promise(
+                ingestRepository(repoUrl),
+                {
+                    pending: "📚 Ingesting repository... This may take a while.",
+                    success: `✅ Repository ingested successfully!`,
+                    error: "❌ Error ingesting repository",
+                },
+                { autoClose: 5000 }
+            );
+            setLastIngestedRepo(data);
         } catch (error) {
-            if (error.name !== 'AbortError') {
-                toast.error( "❌ Error ingesting repository");
-            }
-        } finally {  clearTimeout(reminderTimeout);
-            if (reminderInterval) clearInterval(reminderInterval);
+            // Already handled by toast.promise
+        } finally {
             setLoadingRepo(false);
         }
     };
@@ -87,22 +85,28 @@ const Sidebar = () => {
 
         for (const file of files) {
             const time = new Date().toLocaleString();
+
             try {
-                const res = await uploadFileToQdrant(file, (event) => {
-                    const percent = Math.round((event.loaded * 100) / event.total);
-                    setUploadProgress(prev => ({ ...prev, [file.name]: percent }));
-                });
+                await toast.promise(
+                    uploadFileToQdrant(file, (event) => {
+                        const percent = Math.round((event.loaded * 100) / event.total);
+                        setUploadProgress(prev => ({ ...prev, [file.name]: percent }));
+                    }),
+                    {
+                        pending: `📤 Uploading ${file.name}...`,
+                        success: `${file.name} uploaded successfully!`,
+                        error: `${file.name} failed to upload.`,
+                    },
+                    { autoClose: 5000 }
+                );
 
-                toast.success(` ${file.name} uploaded (${res.chunks} chunks)`);
                 newHistory.push({ name: file.name, status: 'success', time });
-
             } catch (error) {
-                toast.error(` ${file.name} failed: ${error?.response?.data?.detail || error.message}`);
                 newHistory.push({ name: file.name, status: 'error', time });
             }
         }
 
-        const updated = [...newHistory, ...uploadHistory].slice(0, 5); // keep latest 5
+        const updated = [...newHistory, ...uploadHistory].slice(0, 5);
         setUploadHistory(updated);
         localStorage.setItem('uploadHistory', JSON.stringify(updated));
 
@@ -211,15 +215,55 @@ const Sidebar = () => {
                 </form>
             </li>
             {lastIngestedRepo && (
-                <div className="bg-white text-dark mt-3 p-2 rounded small">
-                    <strong>📦 Last Repo:</strong> {lastIngestedRepo.repo_name}<br />
-                    <strong>🧾 Files Processed:</strong> {lastIngestedRepo.files_processed}<br />
-                    <strong>📋 Summary:</strong>
-                    <div className="mt-1" style={{ maxHeight: '120px', overflowY: 'auto', whiteSpace: 'pre-wrap' }}>
-                        {lastIngestedRepo.repo_summary || "No summary available."}
+                <>
+                    <div
+                        className="bg-white text-dark mt-3 p-3 rounded small repo-summary-card"
+                        style={{ cursor: 'pointer' }}
+                        onClick={openRepoModal}
+                    >
+                        <strong>📦 Last Repo:</strong> {lastIngestedRepo.repo_name}<br />
+                        <strong>🧾 Files Processed:</strong> {lastIngestedRepo.files_processed}<br />
+                        <strong>📋 Summary:</strong>
+                        <div className="mt-1" style={{ maxHeight: '120px', overflowY: 'auto', whiteSpace: 'pre-wrap' }}>
+                            {lastIngestedRepo.repo_summary || "No summary available."}
+                        </div>
+                        <div className="text-primary text-right small">Click to expand</div>
                     </div>
-                </div>
+
+                    {/* ✅ Bootstrap Modal */}
+                    <div
+                        className={`modal fade ${isModalOpen ? 'show d-block' : ''}`}
+                        tabIndex="-1"
+                        role="dialog"
+                        style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+                    >
+                        <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h5 className="modal-title">📦 Last Repository Details</h5>
+                                    <button type="button" className="close" onClick={closeRepoModal}>
+                                        <span>&times;</span>
+                                    </button>
+                                </div>
+                                <div className="modal-body">
+                                    <p><strong>Name:</strong> {lastIngestedRepo.repo_name}</p>
+                                    <p><strong>Files Processed:</strong> {lastIngestedRepo.files_processed}</p>
+                                    <p><strong>Summary:</strong></p>
+                                    <pre className="bg-light p-2 rounded" style={{ whiteSpace: 'pre-wrap' }}>
+              {lastIngestedRepo.repo_summary || "No summary available."}
+            </pre>
+                                </div>
+                                <div className="modal-footer">
+                                    <button className="btn btn-secondary btn-sm" onClick={closeRepoModal}>
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </>
             )}
+
 
         </ul>
     );

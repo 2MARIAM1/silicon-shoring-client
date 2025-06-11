@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import {queryDocuments} from "../services/ChatAssistantService";
 import Sidebar from "../components/Sidebar/Sidebar";
 import Header from "../components/Header/Header";
+import {ToastContainer} from "react-toastify";
 
 const ChatAssistant = () => {
     const [inputValue, setInputValue] = useState('');
@@ -89,6 +90,7 @@ const ChatAssistant = () => {
 
                 </div>
             </div>
+            <ToastContainer position="top-right" autoClose={4000} newestOnTop />
         </div>
     );
 };
