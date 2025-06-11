@@ -217,14 +217,14 @@ const Sidebar = () => {
             {lastIngestedRepo && (
                 <>
                     <div
-                        className="bg-white text-dark mt-3 p-3 rounded small repo-summary-card"
+                        className="bg-white text-dark mt-3 mx-3 p-3 rounded small repo-summary-card"
                         style={{ cursor: 'pointer' }}
                         onClick={openRepoModal}
                     >
                         <strong>📦 Last Repo:</strong> {lastIngestedRepo.repo_name}<br />
                         <strong>🧾 Files Processed:</strong> {lastIngestedRepo.files_processed}<br />
                         <strong>📋 Summary:</strong>
-                        <div className="mt-1" style={{ maxHeight: '120px', overflowY: 'auto', whiteSpace: 'pre-wrap' }}>
+                        <div className="mt-1" style={{ maxHeight: '150px', overflowY: 'auto', whiteSpace: 'pre-wrap' }}>
                             {lastIngestedRepo.repo_summary || "No summary available."}
                         </div>
                         <div className="text-primary text-right small">Click to expand</div>
@@ -245,7 +245,14 @@ const Sidebar = () => {
                                         <span>&times;</span>
                                     </button>
                                 </div>
-                                <div className="modal-body">
+                                <div
+                                    className="modal-body"
+                                    style={{
+                                        maxHeight: '70vh',
+                                        overflowY: 'auto',
+                                        overflowX: 'hidden'
+                                    }}
+                                >
                                     <p><strong>Name:</strong> {lastIngestedRepo.repo_name}</p>
                                     <p><strong>Files Processed:</strong> {lastIngestedRepo.files_processed}</p>
                                     <p><strong>Summary:</strong></p>
