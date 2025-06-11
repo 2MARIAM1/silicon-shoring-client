@@ -40,7 +40,7 @@ const ChatAssistant = () => {
                 <div id="content" className="d-flex flex-column" style={{ flex: 1 }}>
                     <Header />
                     {/* Scrollable chat messages */}
-                    <div className="container-fluid py-4" style={{ flexGrow: 1, overflowY: 'auto' }}>
+                    <div className="container-fluid " style={{ flexGrow: 1, overflowY: 'auto' }}>
                         {messages.length === 0 && (
                             <div className="alert alert-primary text-center">
                                 👋 Hello! Ask me any question.

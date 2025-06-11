@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './App.css';
-import UploadScreen from "./screens/UploadScreen";
 import ChatAssistant from "./screens/ChatAssistant";
 import LoginPage from "./screens/LoginPage";
 import ProtectedRoute from "./screens/ProtectedRoute";
@@ -12,16 +11,16 @@ function App() {
             <BrowserRouter>
                 <Routes>
                     <Route path="/login" element={<LoginPage />} />
+                    {/*<Route*/}
+                    {/*    path="/"*/}
+                    {/*    element={*/}
+                    {/*        <ProtectedRoute>*/}
+                    {/*            <UploadScreen />*/}
+                    {/*        </ProtectedRoute>*/}
+                    {/*    }*/}
+                    {/*/>*/}
                     <Route
                         path="/"
-                        element={
-                            <ProtectedRoute>
-                                <UploadScreen />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/chat-assistant"
                         element={
                             <ProtectedRoute>
                                 <ChatAssistant />

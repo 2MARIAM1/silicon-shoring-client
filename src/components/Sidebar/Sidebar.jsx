@@ -19,6 +19,7 @@ const Sidebar = () => {
     const [loadingUpload, setLoadingUpload] = useState(false);
     const [uploadProgress, setUploadProgress] = useState({});
     const [uploadHistory, setUploadHistory] = useState([]);
+    const [lastIngestedRepo, setLastIngestedRepo] = useState(null);
 
     useEffect(() => {
         const saved = localStorage.getItem('uploadHistory');
@@ -33,25 +34,26 @@ const Sidebar = () => {
         }
 
         setLoadingRepo(true);
-        toast.info("⏳ Ingesting repository...");
+        toast.info("📚 Ingesting repository... This may take a while.");
 
-        const controller = new AbortController();
-        const timeout = setTimeout(() => {
-            controller.abort();
-            setLoadingRepo(false);
-            toast.error("⏱️ Request timed out. Please try again.");
-        }, 15000);
+        // ⏱️ Set reminders
+        let reminderInterval = null;
+        const reminderTimeout = setTimeout(() => {
+            reminderInterval = setInterval(() => {
+                toast.info("⏳ Still ingesting... this operation can take a while.", { autoClose: 5000 });
+            }, 15000);
+        }, 30000);
 
         try {
-            const data = await ingestRepository(repoUrl, controller.signal);
-            clearTimeout(timeout);
+            const data = await ingestRepository(repoUrl);
             toast.success(`Repository "${data.repo_name}" ingested successfully!`);
+            setLastIngestedRepo(data);  // ✅ save result for UI
         } catch (error) {
-            clearTimeout(timeout);
             if (error.name !== 'AbortError') {
-                toast.error(error?.response?.data?.detail || "❌ Error ingesting repository");
+                toast.error( "❌ Error ingesting repository");
             }
-        } finally {
+        } finally {  clearTimeout(reminderTimeout);
+            if (reminderInterval) clearInterval(reminderInterval);
             setLoadingRepo(false);
         }
     };
@@ -208,6 +210,17 @@ const Sidebar = () => {
 
                 </form>
             </li>
+            {lastIngestedRepo && (
+                <div className="bg-white text-dark mt-3 p-2 rounded small">
+                    <strong>📦 Last Repo:</strong> {lastIngestedRepo.repo_name}<br />
+                    <strong>🧾 Files Processed:</strong> {lastIngestedRepo.files_processed}<br />
+                    <strong>📋 Summary:</strong>
+                    <div className="mt-1" style={{ maxHeight: '120px', overflowY: 'auto', whiteSpace: 'pre-wrap' }}>
+                        {lastIngestedRepo.repo_summary || "No summary available."}
+                    </div>
+                </div>
+            )}
+
         </ul>
     );
 };
