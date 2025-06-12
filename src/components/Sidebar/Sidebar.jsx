@@ -13,6 +13,7 @@ const ACCEPTED_TYPES = [
 const MAX_FILES = 2;
 
 const Sidebar = () => {
+
     const [repoUrl, setRepoUrl] = useState('');
     const [loadingRepo, setLoadingRepo] = useState(false);
     const [files, setFiles] = useState([]);
@@ -120,7 +121,7 @@ const Sidebar = () => {
 
             {/* Logo */}
             <div className="sidebar-brand d-flex align-items-center justify-content-center">
-                <img src="/images/logo-wemanity-white.png" alt="Logo" style={{ width: '80%' }} />
+                <img src="/images/logo-wemanity-white.png" alt="Logo" style={{ width: '80%',  maxWidth: '180px' }} />
             </div>
 
             <hr className="sidebar-divider" />

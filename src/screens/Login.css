@@ -1,0 +1,10 @@
+.login-form-control {
+    border-radius: 10rem !important;
+    padding: 0.75rem 1rem !important;
+    height: auto;
+}
+
+.custom-login-btn {
+    border-radius: 10rem !important;
+    padding: 0.75rem 1rem !important;
+}

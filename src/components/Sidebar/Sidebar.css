@@ -24,6 +24,11 @@
   padding: 0.75rem 1rem;
 }
 
-.custom-sidebar-wide {
-  width: 350px !important;
+.sidebar {
+  width: 400px !important; /* Adjust to your desired width */
+}
+
+.sidebar.toggled {
+  width: 0 !important; /* This is for the collapsed state */
+  overflow-x: hidden;
 }
