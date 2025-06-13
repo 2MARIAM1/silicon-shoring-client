@@ -3,6 +3,9 @@ import {queryDocuments} from "../services/ChatAssistantService";
 import Sidebar from "../components/Sidebar/Sidebar";
 import Header from "../components/Header/Header";
 import {ToastContainer} from "react-toastify";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeHighlight from 'rehype-highlight';
 
 const ChatAssistant = () => {
     const [inputValue, setInputValue] = useState('');
@@ -30,6 +33,7 @@ const ChatAssistant = () => {
         }
     };
 
+
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
@@ -51,8 +55,16 @@ const ChatAssistant = () => {
                         {messages.map((msg, index) => (
                             <div key={index} className={`mb-3 ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
                                 <div className={`d-inline-block p-3 rounded shadow ${msg.role === 'user' ? 'bg-primary text-white' : 'bg-light text-dark'}`}
-                                     style={{ maxWidth: '75%' }}>
-                                    {msg.content}
+                                     style={{ maxWidth: '75%' , whiteSpace: 'pre-wrap'}}>
+                                    {msg.role === 'bot' ? (
+                                        <ReactMarkdown
+                                            children={msg.content}
+                                            remarkPlugins={[remarkGfm]}
+                                            rehypePlugins={[rehypeHighlight]}
+                                        />
+                                    ) : (
+                                        msg.content
+                                    )}
                                 </div>
                             </div>
                         ))}
