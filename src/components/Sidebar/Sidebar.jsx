@@ -26,10 +26,18 @@ const Sidebar = () => {
     const closeRepoModal = () => setIsModalOpen(false);
 
     useEffect(() => {
-        localStorage.clear();
         const saved = localStorage.getItem('uploadHistory');
         if (saved) setUploadHistory(JSON.parse(saved));
+
+        const savedRepo = localStorage.getItem('lastIngestedRepo');
+        if (savedRepo) setLastIngestedRepo(JSON.parse(savedRepo));
     }, []);
+
+    useEffect(() => {
+        setLastIngestedRepo(null);
+        localStorage.removeItem('lastIngestedRepo');
+    }, [repoUrl]);
+
 
     const handleRepoSubmit = async (e) => {
         e.preventDefault();
@@ -50,6 +58,8 @@ const Sidebar = () => {
                 { autoClose: 5000 }
             );
             setLastIngestedRepo(data);
+            localStorage.setItem('lastIngestedRepo', JSON.stringify(data));
+
         } catch (error) {
             // Already handled by toast.promise
         } finally {
