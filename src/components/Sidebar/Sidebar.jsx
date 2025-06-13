@@ -10,7 +10,7 @@ const ACCEPTED_TYPES = [
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     'text/plain'
 ];
-const MAX_FILES = 2;
+const MAX_FILES = 3;
 
 const Sidebar = () => {
 
@@ -34,10 +34,10 @@ const Sidebar = () => {
     }, []);
 
     useEffect(() => {
-        setLastIngestedRepo(null);
-        localStorage.removeItem('lastIngestedRepo');
-    }, [repoUrl]);
-
+        if (lastIngestedRepo) {
+            localStorage.setItem('lastIngestedRepo', JSON.stringify(lastIngestedRepo));
+        }
+    }, [lastIngestedRepo]);
 
     const handleRepoSubmit = async (e) => {
         e.preventDefault();
